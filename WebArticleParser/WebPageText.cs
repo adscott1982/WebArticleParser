@@ -13,31 +13,38 @@ namespace WebArticleParser
         {
             LoadWebPage(url);
             LoadText();
-            Text = HtmlEntity.DeEntitize(Text);
         }
 
         private void LoadText()
         {
             var title = this.htmlDoc.DocumentNode.Descendants("title");
             if (title.Count() > 0) this.Text += title.First().InnerText + Environment.NewLine + Environment.NewLine;
-            
-            var paragraphs = this.htmlDoc.DocumentNode.Descendants("p")
-                                                      .Select(n => n.InnerText)
-                                                      .Where(t => !string.IsNullOrWhiteSpace(t))
-                                                      .Select(s => this.RemoveEscapeCharacters(s));
 
+            // Add different node names here that you want to include
+
+            var paragraphs =
+                this.htmlDoc.DocumentNode.Descendants()
+                    .Where(n => n.Name == "p" || n.Name == "li")
+                    .Select(n => n.InnerText)
+                    .Where(t => !string.IsNullOrWhiteSpace(t) && t.Contains(" "));
+                                                      
             foreach (var paragraph in paragraphs)
             {
-                var isValid = paragraph.Contains(" ");
-                var text = isValid ? paragraph + Environment.NewLine + Environment.NewLine : "";
+                var text = HtmlEntity.DeEntitize(paragraph);
+                text = this.TrimExcessNewLines(text);
+                text += Environment.NewLine + Environment.NewLine;
                 this.Text += text;
             }
+
         }
 
-        private string RemoveEscapeCharacters(string s)
+        private string TrimExcessNewLines(string s)
         {
-            s = s.Replace("\n", "");
-            s = s.Replace("\t", "");
+            while (s.StartsWith("\n") || s.EndsWith("\n") || s.Contains("\n\n"))
+            {
+                s = s.Trim('\n');
+                s = s.Replace("\n\n", "\n");
+            }
 
             return s;
         }
