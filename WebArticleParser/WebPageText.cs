@@ -1,6 +1,8 @@
 ﻿using System;
 using HtmlAgilityPack;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace WebArticleParser
 {
@@ -21,10 +23,10 @@ namespace WebArticleParser
             if (title.Count() > 0) this.Text += title.First().InnerText + Environment.NewLine + Environment.NewLine;
 
             // Add different node names here that you want to include
-
+            //  || n.Name == "li"
             var paragraphs =
                 this.htmlDoc.DocumentNode.Descendants()
-                    .Where(n => n.Name == "p" || n.Name == "li")
+                    .Where(n => n.Name == "p")
                     .Select(n => n.InnerText)
                     .Where(t => !string.IsNullOrWhiteSpace(t) && t.Contains(" "));
                                                       
