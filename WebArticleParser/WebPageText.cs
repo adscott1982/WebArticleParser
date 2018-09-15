@@ -29,7 +29,7 @@ namespace WebArticleParser
                     .Where(n => n.Name == "p")
                     .Select(n => n.InnerText)
                     .Where(t => !string.IsNullOrWhiteSpace(t) && t.Contains(" "));
-                                                      
+                                                   
             foreach (var paragraph in paragraphs)
             {
                 var text = HtmlEntity.DeEntitize(paragraph);
@@ -37,7 +37,6 @@ namespace WebArticleParser
                 text += Environment.NewLine + Environment.NewLine;
                 this.Text += text;
             }
-
         }
 
         private string TrimExcessNewLines(string s)
